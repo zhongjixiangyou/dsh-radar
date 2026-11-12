@@ -247,6 +247,7 @@ h1 .accent { color: var(--teal); }
 }
 .entry:hover { border-color: var(--line-strong); box-shadow: var(--shadow-lift); transform: translateY(-1px); }
 .entry:hover::before { background: var(--teal); }
+.entry.flash { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
 .entry[data-status="no"]::before { border-color: var(--hot); }
 .entry[data-status="no"]:hover::before { background: var(--hot); }
 .entry[data-status="adapt"]::before { border-color: var(--amber); }
@@ -815,7 +816,7 @@ footer .sp { margin-left: auto; font-family: var(--mono); font-size: 10px; lette
     var meta = STATUS[st.status];
     var s = SOURCE[e.source];
     var h = "";
-    h += '<article class="entry" data-status="' + st.status + '" data-source="' + e.source + '" style="--i:' + (i % 8) + '">';
+    h += '<article class="entry" id="e-' + esc(e.id) + '" data-status="' + st.status + '" data-source="' + e.source + '" style="--i:' + (i % 8) + '">';
     h += '<div class="entry-top">';
     h += '<span class="src" data-tone="' + s.tone + '">' + esc(s.label) + "</span>";
     h += '<span class="entry-prod">' + esc(e.product) + "</span>";
@@ -930,12 +931,40 @@ footer .sp { margin-left: auto; font-family: var(--mono); font-size: 10px; lette
     b.lastChild.textContent = open ? "细看" : "收起";
   });
 
+  /* ---------- deep link: 打开 #<entry-id> 直接定位并展开 ---------- */
+  function openFromHash() {
+    var raw = (location.hash || "").replace(/^#/, "");
+    if (!raw) return;
+    var id = decodeURIComponent(raw).replace(/^e-/, "");
+    var art = document.getElementById("e-" + id);
+    if (!art && (state.source !== "all" || state.status !== "all")) {
+      state.source = "all";
+      state.status = "all";
+      buildFilters();
+      render();
+      art = document.getElementById("e-" + id);
+    }
+    if (!art) return;
+    var btn = art.querySelector("[data-toggle]");
+    var box = document.getElementById("more-" + id);
+    if (btn && box && box.hidden) {
+      btn.setAttribute("aria-expanded", "true");
+      box.hidden = false;
+      btn.lastChild.textContent = "收起";
+    }
+    if (art.scrollIntoView) art.scrollIntoView({ behavior: "smooth", block: "center" });
+    art.classList.add("flash");
+    setTimeout(function () { art.classList.remove("flash"); }, 2600);
+  }
+
   renderMeta();
   buildFilters();
   bindFilters();
   renderStats();
   renderMatrix();
   render();
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
 })();
 </script>
 </body>
