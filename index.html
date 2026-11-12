@@ -4,7 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" id="themeColor" content="#faf9f6">
+<meta name="format-detection" content="telephone=no">
 <title>ChatGPT &amp; Codex 更新雷达 · DSH 对照</title>
+<script>
+/* 首屏前先把主题定下来，避免深色用户看到白闪 */
+(function(){try{var m=localStorage.getItem("radar-theme");if(["light","dark","auto"].indexOf(m)<0)m="auto";var t=m==="auto"?((window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light"):m;document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
+</script>
 <style>
 /* ---------------- tokens ---------------- */
 :root {
@@ -29,6 +35,7 @@
   --radius-tile: 10px;
   --radius-card: 13px;
   --radius-pill: 999px;
+  --pad: 20px;
   --serif: "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", "Songti TC", Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --mono: "SF Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -60,6 +67,8 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+button, a, [role="button"] { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.entry-title, .entry-lede, .mcell, .port, .more li, .srcs a, .how-step p, .bar-row span { overflow-wrap: anywhere; }
 body {
   margin: 0;
   background: var(--paper);
@@ -375,50 +384,130 @@ footer .sp { margin-left: auto; font-family: var(--mono); font-size: 10px; lette
   .side { display: none; }
 }
 @media (max-width: 880px) {
+  html { overflow-x: clip; scroll-padding-top: calc(var(--mbar-h, 104px) + 12px); }
   body::before { opacity: .5; }
-  .shell { display: block; padding: 0 20px 80px; }
+  .shell { display: block; padding: 0 var(--pad) 80px; }
   .rail { display: none; }
-  html { scroll-padding-top: 96px; }
+
   .mbar {
     display: block; position: sticky; top: 0; z-index: 40;
-    padding: 10px 20px 0;
-    background: var(--paper);
+    padding: 0; background: var(--paper);
     border-bottom: 1px solid var(--line);
   }
-  .mbar-top { display: flex; align-items: center; gap: 10px; }
-  .mbar .chips { overflow-x: auto; flex-wrap: nowrap; padding: 9px 0 10px; scrollbar-width: none;
-    -webkit-overflow-scrolling: touch; }
+  .mbar-top { display: flex; align-items: center; gap: 10px; padding: 0 var(--pad); min-height: 48px; }
+  .mbar .chips {
+    overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; padding: 4px var(--pad) 8px;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity; overscroll-behavior-x: contain;
+  }
   .mbar .chips::-webkit-scrollbar { display: none; }
   .mbar .chips.has-more {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), rgba(0,0,0,.05));
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), rgba(0,0,0,.05)); }
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 30px), rgba(0,0,0,.05));
+    mask-image: linear-gradient(to right, #000 calc(100% - 30px), rgba(0,0,0,.05)); }
   .mbar .chips.has-more.at-end { -webkit-mask-image: none; mask-image: none; }
-  .mbar .chip { flex: none; padding: 5px 9px; font-size: 12px; }
-  .vsep { flex: none; width: 1px; height: 16px; background: var(--line-strong); margin: 4px 3px 0; }
+  /* 触控目标：横向筛选条一律 44px 高 */
+  .mbar .chip {
+    flex: none; min-height: 44px; padding: 0 15px; font-size: 13px;
+    display: inline-flex; align-items: center; justify-content: center;
+    scroll-snap-align: start;
+  }
+  .vsep { flex: none; width: 1px; height: 18px; background: var(--line-strong); margin: 13px 5px 0; }
+  .theme-btn { min-height: 44px; padding: 0 14px; font-size: 11px; }
+
   main { padding-top: 4px; }
-  .hero { padding-top: 22px; }
-  h1 { font-size: clamp(30px, 8vw, 40px); }
+  .hero { padding-top: 18px; }
+  h1 { font-size: clamp(29px, 7.8vw, 40px); }
+  .kicker { margin-bottom: 14px; }
   .lede { font-size: 14.5px; }
+  .hero-rule { margin-top: 20px; }
+
   .stats { grid-template-columns: repeat(2, 1fr); }
+  .stat { padding: 16px 4px 14px; }
   .stat:nth-child(2) { border-right: 0; }
   .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--line); }
-  .stat b { font-size: 28px; }
+  .stat b { font-size: 27px; }
+  .stat span { font-size: 11px; margin-top: 5px; }
+
+  .section-head { flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 36px 0 4px; }
+  .section-head h2 { font-size: 19px; }
+  .section-head h2 small { font-size: 11.5px; margin-left: 8px; }
+  .section-head em.tag { margin-left: auto; font-size: 9.5px; }
+
   .day { grid-template-columns: 1fr; gap: 0; }
   .day + .day { margin-top: 26px; }
-  .day-label { position: static; text-align: left; padding: 0 0 10px; display: flex; align-items: baseline; gap: 9px; }
+  .day-label {
+    position: static; text-align: left; padding: 0 0 10px;
+    display: flex; align-items: baseline; gap: 9px; border-bottom: 1px solid var(--line);
+  }
   .day-label b { font-size: 17px; }
   .day-label span { margin-top: 0; }
-  .day-items { border-left: 0; padding-left: 0; -webkit-mask-image: none; mask-image: none; }
-  .entry { padding: 15px 15px 14px; }
+  .day-items { border-left: 0; padding: 10px 0 0; -webkit-mask-image: none; mask-image: none; }
+  .entry { padding: 15px 15px 12px; }
   .entry::before { display: none; }
   .entry-title { font-size: 18px; }
-  .mrow { grid-template-columns: 1fr; gap: 5px; padding: 15px 2px; }
+
+  /* 「细看」整行可点，避免 10px 小字难点 */
+  .more-btn { min-height: 44px; padding: 10px 0; margin-top: 4px; font-size: 11px; width: 100%; justify-content: flex-start; }
+  .srcs { gap: 0 16px; }
+  .srcs a { display: inline-flex; align-items: center; min-height: 44px; }
+
+  .mrow { grid-template-columns: 1fr; gap: 6px; padding: 16px 2px; }
   .mrow--head { display: none; }
-  .mcell small { margin-top: 6px; }
-  .pill { margin-top: 4px; }
-  .how { grid-template-columns: 1fr; gap: 18px; }
+  .mcell small { margin-top: 8px; font-size: 9.5px; }
+  .pill { margin-top: 2px; }
+
+  .how { grid-template-columns: 1fr; gap: 20px; }
+  footer { margin-top: 44px; }
   footer .sp { margin-left: 0; }
 }
+
+/* 手机竖屏：360–430px */
+@media (max-width: 480px) {
+  :root { --pad: 15px; }
+  .shell { padding-bottom: 66px; }
+  h1 { font-size: clamp(26px, 7.4vw, 33px); line-height: 1.12; }
+  .lede { font-size: 14px; line-height: 1.72; }
+  .hero-rule { font-size: 9.5px; gap: 10px; letter-spacing: .08em; }
+  .hero-rule span:last-child { text-align: right; }
+
+  .stat b { font-size: 25px; }
+  .stat span { font-size: 10.5px; }
+  .section-head h2 { font-size: 18px; }
+  .section-head h2 small { display: block; margin: 2px 0 0; }
+
+  .entry { padding: 14px 13px 10px; border-radius: var(--radius-tile); }
+  .entry-title { font-size: 17px; line-height: 1.42; margin: 9px 0 6px; }
+  .entry-lede { font-size: 13.4px; line-height: 1.7; }
+  .verdict { margin-top: 11px; padding: 10px 11px; gap: 4px 9px; }
+  .verdict p { flex: 1 1 100%; font-size: 12.5px; }
+  .more li { font-size: 12.8px; }
+  .port { font-size: 12.2px; padding: 9px 10px; }
+  .srcs { font-size: 12px; }
+
+  .mrow { padding: 14px 2px 16px; }
+  .mdim { font-size: 14.5px; }
+  .mcell { font-size: 12.4px; }
+
+  .how-step p { font-size: 12.5px; }
+  footer { font-size: 11.2px; gap: 8px 18px; }
+}
+
+/* 超窄屏（<375px）再收一档 */
+@media (max-width: 374px) {
+  :root { --pad: 13px; }
+  h1 { font-size: 25px; }
+  .mbar .chip { padding: 0 12px; font-size: 12.5px; }
+  .stat b { font-size: 23px; }
+  .entry-title { font-size: 16.5px; }
+}
+
+/* 触屏：去掉 sticky hover 的抬起效果 */
+@media (hover: none) {
+  .entry:hover { box-shadow: var(--shadow); transform: none; border-color: var(--line); }
+  .entry:hover::before { background: var(--card); }
+  .chip:hover { border-color: var(--line-strong); color: var(--ink-3); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
@@ -569,7 +658,7 @@ footer .sp { margin-left: auto; font-family: var(--mono); font-size: 10px; lette
 (function () {
   "use strict";
 
-  var state = { source: "all", status: "all", theme: null };
+  var state = { source: "all", status: "all", theme: null, themeMode: "auto" };
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var esc = function (s) {
@@ -596,24 +685,62 @@ footer .sp { margin-left: auto; font-family: var(--mono); font-size: 10px; lette
   }
 
   /* ---------- theme ---------- */
-  function applyTheme(t) {
-    document.documentElement.setAttribute("data-theme", t);
-    state.theme = t;
-    try { localStorage.setItem("radar-theme", t); } catch (e) {}
-    var b1 = $("#themeBtn"), b2 = $("#themeBtnM");
-    var label = t === "dark" ? "◑ 切换浅色" : "◐ 切换深色";
-    if (b1) b1.textContent = label;
-    if (b2) b2.textContent = label;
+  /* 三种模式：auto 跟随系统 / light / dark。只有手动点过才写 localStorage 锁死。 */
+  var THEME_KEY = "radar-theme";
+  var THEME_MODES = ["auto", "light", "dark"];
+  var mqDark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+
+  function savedThemeMode() {
+    var v = null;
+    try { v = localStorage.getItem(THEME_KEY); } catch (e) {}
+    return THEME_MODES.indexOf(v) > -1 ? v : "auto";
   }
-  (function initTheme() {
-    var saved = null;
-    try { saved = localStorage.getItem("radar-theme"); } catch (e) {}
-    var sysDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(saved || (sysDark ? "dark" : "light"));
-  })();
+  function resolveTheme(mode) {
+    if (mode === "auto") return (mqDark && mqDark.matches) ? "dark" : "light";
+    return mode;
+  }
+  function paintTheme(mode) {
+    var t = resolveTheme(mode);
+    state.themeMode = mode;
+    state.theme = t;
+    document.documentElement.setAttribute("data-theme", t);
+    var color = t === "dark" ? "#12181a" : "#faf9f6";
+    var meta = document.getElementById("themeColor");
+    if (meta) meta.setAttribute("content", color);
+    var label = mode === "auto" ? "◐ 跟随系统" : (t === "dark" ? "☾ 深色" : "☀ 浅色");
+    var tip = mode === "auto"
+      ? "主题：跟随系统（点一下切到浅色）"
+      : (mode === "light" ? "主题：固定浅色（点一下切到深色）" : "主题：固定深色（点一下回到跟随系统）");
+    ["#themeBtn", "#themeBtnM"].forEach(function (sel) {
+      var el = $(sel);
+      if (!el) return;
+      el.textContent = label;
+      el.setAttribute("title", tip);
+      el.setAttribute("aria-label", tip);
+      el.setAttribute("data-mode", mode);
+    });
+  }
+  function setThemeMode(mode, persist) {
+    paintTheme(mode);
+    if (persist) { try { localStorage.setItem(THEME_KEY, mode); } catch (e) {} }
+  }
+  paintTheme(savedThemeMode());
+
   ["#themeBtn", "#themeBtnM"].forEach(function (sel) {
     var el = $(sel);
-    if (el) el.addEventListener("click", function () { applyTheme(state.theme === "dark" ? "light" : "dark"); });
+    if (!el) return;
+    el.addEventListener("click", function () {
+      var next = THEME_MODES[(THEME_MODES.indexOf(state.themeMode) + 1) % THEME_MODES.length];
+      setThemeMode(next, true);
+    });
+  });
+  if (mqDark) {
+    var onSchemeChange = function () { if (state.themeMode === "auto") paintTheme("auto"); };
+    if (mqDark.addEventListener) mqDark.addEventListener("change", onSchemeChange);
+    else if (mqDark.addListener) mqDark.addListener(onSchemeChange);
+  }
+  window.addEventListener("storage", function (ev) {
+    if (ev.key === THEME_KEY) paintTheme(savedThemeMode());
   });
 
   /* ---------- filters ---------- */
@@ -644,6 +771,13 @@ footer .sp { margin-left: auto; font-family: var(--mono); font-size: 10px; lette
   }
 
   function syncChips() {
+    /* 让锚点跳转留出吸顶筛选条的高度（手机端换行/字号变化都能自适应） */
+    var bar = $(".mbar");
+    if (bar) {
+      var h = Math.round(bar.getBoundingClientRect().height);
+      if (h > 1) document.documentElement.style.setProperty("--mbar-h", h + "px");
+      else document.documentElement.style.removeProperty("--mbar-h");
+    }
     var mc = $("#mChips");
     if (!mc) return;
     var more = mc.scrollWidth > mc.clientWidth + 2;
@@ -656,6 +790,9 @@ footer .sp { margin-left: auto; font-family: var(--mono); font-size: 10px; lette
     if (mc) {
       mc.addEventListener("scroll", syncChips, { passive: true });
       window.addEventListener("resize", syncChips);
+      window.addEventListener("orientationchange", function () { setTimeout(syncChips, 120); });
+      if (window.visualViewport) window.visualViewport.addEventListener("resize", syncChips);
+      setTimeout(syncChips, 60);
     }
     [$("#sourceChips"), $("#statusChips"), $("#mChips")].forEach(function (root) {
       if (!root) return;
