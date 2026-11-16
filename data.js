@@ -4,10 +4,10 @@
 
 const META = {
   title: "ChatGPT & Codex 更新雷达",
-  kicker: "WEEKLY SIGNAL · 第 46 周",
+  kicker: "WEEKLY SIGNAL · 第 47 周",
   lede: "按时间线读 OpenAI 这一期到底改了什么，每条都标注它在 DeepSeek Harness 里的落点：已经有了、底层能模仿，还是暂时做不到。",
-  updated: "2026-11-11",
-  window: "2026-10-01 → 2026-11-11",
+  updated: "2026-11-16",
+  window: "2026-10-01 → 2026-11-16",
   nextUpdate: "每周一 09:00",
   sources: [
     { label: "ChatGPT Release Notes", url: "https://help.openai.com/en/articles/6825453-chatgpt-release-notes" },
@@ -30,6 +30,128 @@ const SOURCE = {
 };
 
 const ENTRIES = [
+  {
+    id: "chatgpt-wallet",
+    date: "2026-11-13",
+    source: "chatgpt",
+    product: "ChatGPT Wallet",
+    title: "点一下让它替你付钱：ChatGPT Wallet 开闸",
+    lede: "让 dot 帮你在商家网页上把东西买下来：卡号既不进模型，也不给商家，你只用 Face ID 点头。",
+    points: [
+      "美国 18 岁以上 Pro 用户灰度，需美区卡与美区账单地址",
+      "付款前你自己核对商家、条目、总额、选中的卡，再用指纹/面容授权",
+      "结算用的是替代凭证，真实卡号对 agent 和商家都隐藏",
+      "卡的积分与拒付保护仍归你；授权不等于下单，得看商家自己的确认"
+    ],
+    dsh: {
+      status: "no",
+      note: "这不是模型能力，是支付链路",
+      detail: "背后是支付网关 + 卡令牌化 + 生物认证，缺任何一环都做不了；DSH 是开发环境，没有消费场景，也不该拿到支付凭据。真要沾，只能是「生成待付款清单交给人处理」。",
+      path: "不排期；需要时做「报价单导出」这类只读旁路"
+    },
+    src: [{ label: "ChatGPT Release Notes · 2026-11-13", url: "https://help.openai.com/en/articles/6825453-chatgpt-release-notes" }]
+  },
+  {
+    id: "codex-0169",
+    date: "2026-11-13",
+    source: "codex",
+    product: "Codex CLI 0.169.0",
+    title: "终端能开侧聊标签，旧任务可以按名字搜了",
+    lede: "opt-in 的 terminal workspace 支持多个并行侧聊标签，键盘鼠标随便切，重启后还能把本地侧聊捡回来。",
+    points: [
+      "多侧聊标签并行，键盘或鼠标切换；重启 Codex 可重开保存的本地侧聊",
+      "命令中心按名字、提示预览、工作目录三种方式搜旧任务",
+      "全屏 transcript 可折叠已完成的执行细节，答案仍显示、工具输出仍可搜"
+    ],
+    dsh: {
+      status: "adapt",
+      note: "并行能力有，侧聊视图与恢复没有",
+      detail: "子 agent 和后台 job 本来就能并行，但没有「同一任务旁边挂几条侧聊」的视图，也没有把本地侧聊持久化再恢复的索引——session 目录里全是原始记录，缺一层 side-thread 表。",
+      path: "session 目录加 side-thread 索引 → 会话右侧开可拖拽分栏 → 重启按索引恢复"
+    },
+    src: [{ label: "Changelog · 2026-11-13", url: "https://learn.chatgpt.com/docs/changelog" }]
+  },
+  {
+    id: "codex-0168",
+    date: "2026-11-13",
+    source: "codex",
+    product: "Codex CLI 0.168.0",
+    title: "它把模型提供方搬进面板，把对话拖成两栏",
+    lede: "Sessions → Model providers 里挑默认提供方；打开 features.tui_workspace 就能在主对话旁开侧栏，拖分隔条调宽度。",
+    points: [
+      "Sessions → Model providers 浏览提供方并设定新会话默认值",
+      "features.tui_workspace 开主/侧双栏，拖分隔条改宽度，leader z 放大当前栏",
+      "音频模型可直接附录音，被拒的录音后续轮次跳过，按片段时长择优保留上下文"
+    ],
+    dsh: {
+      status: "has",
+      note: "多 provider 本来就是我们的底座",
+      detail: "provider/model 写在会话配置里，随时换，不需要「开个面板设默认」这种折中；分栏是终端 UI 形态问题，Web GUI 用抽屉和多面板已经覆盖，不必照抄。",
+      path: "无"
+    },
+    src: [{ label: "Changelog · 2026-11-13", url: "https://learn.chatgpt.com/docs/changelog" }]
+  },
+  {
+    id: "voice-retirement",
+    date: "2026-11-10",
+    source: "chatgpt",
+    product: "ChatGPT Voice",
+    title: "Advanced 与 Standard 语音 12 月 11 日下线，只剩 GPT-Live",
+    lede: "七月换到 GPT-Live 后语音用量几乎翻倍，旧的两档准备关掉；实时视频与共享屏幕暂时还跑在 Advanced 上。",
+    points: [
+      "Advanced / Standard voice 于 2026-12-11 从 ChatGPT Voice 移除",
+      "常规语音由 GPT-Live 承接，实时视频与屏幕共享暂留 Advanced",
+      "后续投入集中在应答深度、跨会话连续性与个性化"
+    ],
+    dsh: {
+      status: "no",
+      note: "我们还没走上语音这条路",
+      detail: "DSH 没有语音模型也没有实时音视频通道，这条是纯观察项；真要接，得先落 TTS/ASR provider 和一条实时流，工程量在传输不在模型。",
+      path: "不排期"
+    },
+    src: [{ label: "ChatGPT Release Notes · 2026-11-10", url: "https://help.openai.com/en/articles/6825453-chatgpt-release-notes" }]
+  },
+  {
+    id: "business-hub",
+    date: "2026-11-10",
+    source: "chatgpt",
+    product: "Business Hub",
+    title: "商家能在 ChatGPT 里认领自己的店，还能挂个客服 agent",
+    lede: "认领、验证身份后可以发商家信息、接商品 feed、看提及与点击；认证过的美区电商还能建一个回答客户问题的业务 agent。",
+    points: [
+      "Persona 身份验证通过后可发布商家信息、连商品 feed、看提及与网站点击",
+      "美区有网站的电商/在线服务商家可创建业务 agent，先审后发",
+      "入口在 ChatGPT Web 侧栏的 Business Hub"
+    ],
+    dsh: {
+      status: "no",
+      note: "OpenAI 的商业后台，与 DSH 无关",
+      detail: "这是给商家用的经营入口，不是开发能力；我们既没有商家身份也没有它的商品库。",
+      path: "无"
+    },
+    src: [{ label: "ChatGPT Release Notes · 2026-11-10", url: "https://help.openai.com/en/articles/6825453-chatgpt-release-notes" }]
+  },
+  {
+    id: "ios-307",
+    date: "2026-11-10",
+    source: "ios",
+    product: "ChatGPT for iOS 1.2026.307",
+    title: "手机上能把图片和文件直接粘进全屏输入框了",
+    lede: "这一版基本是 Codex 手机端的手感修补：全屏作曲器贴图贴文件、已发提示里的附件能点开、Windows 主机还能切盘符。",
+    points: [
+      "全屏作曲器支持粘贴图片与文件，已发提示里的附件可回开",
+      "Windows 主机在文件夹选择器里切换盘符",
+      "批注里可以口述；iPhone Duo 能隐藏任务列表而不离开当前任务",
+      "修复了 iPad/iPhone Duo 键盘与工具栏、Windows 上打开改动文件与响应图的问题"
+    ],
+    dsh: {
+      status: "adapt",
+      note: "附件能收，全屏作曲器与回开附件还没有",
+      detail: "手机网关能收图与文件，但没有「全屏写作 + 一次贴多个附件 + 从历史提示里点开当时那个附件」这一层；文件查看也只到单机路径。",
+      path: "手机端作曲器改全屏面板 + 附件 chip → 提示气泡里附件可点开 → 补听写与隐藏任务列表"
+    },
+    src: [{ label: "Changelog · 2026-11-10", url: "https://learn.chatgpt.com/docs/changelog" }]
+  },
   {
     id: "codex-0167",
     date: "2026-11-06",
